@@ -28,12 +28,45 @@
 	<div id="app">
 		<div id="form-wrapper">
 			<form id="form_">
-				<textarea id="text-area" name="userInput" cols="40" rows="5" maxlength="200" autofocus></textarea>
-				<input type="button" id="submit-button" value="Submit" onclick="userSubmit();">
+				<textarea id="text-area" name="userInput" cols="100" rows="5" maxlength="200" autofocus>What is the area under the curve x to third power from 0 to 2?</textarea>
+				<input type="button" id="submit-button" value="Submit" >
 			</form>
 		</div>
+		
+		<div id="feedback-wrapper">
+			<div id="visual-rep-box">
+			<canvas id="visual-rep">
+			
+			</canvas>
+			
+			</div>
+			
+			<div id="answer-box">
+			<div id="answer">
+				<p>The area under the curve is 4.</p>
+				<p>The area under the curve can be expressed by the following integral.</p>
+				<p id="math-expr">\( \int_0^2 x^3 dx = 4\)</p>
+			</div>
+			</div>
+		
+		</div>
+		
 
 	</div>
+	<script>
+		var canvas = document.getElementById("visual-rep");
+		var ctx = canvas.getContext("2d");
+		ctx.imageSmoothingEnabled = true;
+		var width = canvas.width;
+		var height = canvas.height;
+		ctx.fillStyle = "rgba(223, 223, 223, 0.5)";
+		for (var i = 0; i < width; i++) {
+			var x = i/width;
+			var y = height - (((x*x*x)) * height);
+			ctx.fillRect(i,y,1,height);
+		}
+
+	</script>
 	</div>
 	
 
