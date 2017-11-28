@@ -5,7 +5,10 @@
   <meta charset="utf-8">
 
   <title>Pythia</title>
+<link rel="icon" href="tab_logo.png">
 <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+
+
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'></script>
 
 <script type = "text/javascript" 
@@ -15,14 +18,22 @@
 
 </head>
 
-<body>
+<body onload="onload();">
 
 	<div id="header">
 		<div id="name">Pythia</div> <img id="logo" src="logo.png"/>
 	</div>
 	<div id="info"></div>
 	<div id="app-wrapper">
-	<div id="app"><form id="form_"><textarea id="text-area" name="Text1" cols="40" rows="5" maxlength="200" autofocus></textarea></form></div>
+	<div id="app">
+		<div id="form-wrapper">
+			<form id="form_">
+				<textarea id="text-area" name="userInput" cols="40" rows="5" maxlength="200" autofocus></textarea>
+				<input type="button" id="submit-button" value="Submit" onclick="userSubmit();">
+			</form>
+		</div>
+
+	</div>
 	</div>
 	
 
