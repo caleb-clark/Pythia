@@ -160,6 +160,7 @@ button:focus {
 	padding-bottom: 0.5em;
 	background-color: rgba(223, 223, 223, 0.25);
 	margin-top: 0.5em;
+	margin-bottom: 1em;
 	float: right;
     -webkit-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
@@ -237,4 +238,7 @@ feedback-wrapper {
 	font-size: 1.5em;
 	cursor: pointer;
 	text-shadow: 0 10px 10px rgba(0,0,0,0.50);
+}
+#visual {
+	margin-top: 50px;
 }
