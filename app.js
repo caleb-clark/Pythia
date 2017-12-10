@@ -2,7 +2,7 @@ var userText;
 var app;
 
 
-var operators = new Set(['+','-','/','(',')','*','&','|','&&','||','!','^']);
+var operators = new Set(['+','-','/','(',')','*','&','|','&&','||','!','^','=']);
 
 
 var operationMap = {
@@ -322,12 +322,37 @@ function processText(userInput) {
 		// some other query
 	} else if (finalOperation == "" && finalExpression != "") {
 		// just throw is nerdamer and see what happens
-		if (finalVar == "") {
-			return -1;
+		
+		var answer = nerdamer(finalExpression).evaluate();
+		
+		var answerLatex =  nerdamer.convertToLaTeX(answer.toString());
+		var questionLatex = nerdamer(expressions[0]);
+		questionLatex = nerdamer.convertToLaTeX(questionLatex);
+		
+		var myFunction = answer.buildFunction();
+
+		var x_vals = [];
+		
+		var y_vals = [];
+		
+		for (var q = -10; q <= 10; q += 0.1) {
+			x_vals.push(q);
+			y_vals.push(myFunction(q));
 		}
+		yourQSentence = 'You asked: ' + standardTxt.sentences().out();
+		
+		document.getElementById('you-asked').innerHTML = yourQSentence;
+		
+		var math = MathJax.Hub.getAllJax("math-expr")[0];
+		
+		MathJax.Hub.Queue(["Text",math,questionLatex.toString() + ' = ' + answerLatex.toString()]);
 
-
-
+		getVisual(x_vals,y_vals);
+		
+		document.getElementById('answer-box').style.display = 'block';
+		
+		
+	
 	} else if (finalOperation != "" && finalExpression != "") {
 		// good
 
@@ -388,7 +413,9 @@ function opToExpr(typeExpr,expr,finalVar) {
 		return 'diff(' + expr + ',' + finalVar + ')';
 	} else if (typeExpr == 'integrate') {
 		return 'integrate(' + expr + ',' + finalVar + ')';
-	} 
+	} else {
+		return "EVAL";
+	}
 }
 
 
@@ -499,8 +526,10 @@ var trace1 = {
 };
 
 var data = [trace1];
-
+var widthVal = document.getElementById('form-wrapper').getBoundingClientRect().width*0.99;
+console.log(widthVal);
 var layout = {
+	width: widthVal,
     title: 'Visual Representation',
     showlegend: false,
   	font: {
@@ -527,7 +556,7 @@ var layout = {
   paper_bgcolor: 'rgba(223, 223, 223, 0.25)',
   plot_bgcolor: 'rgba(223, 223, 223, 0.25)'
 };
-Plotly.newPlot(tester, data, layout, {staticPlot: true});
+Plotly.newPlot(tester, data, layout, {staticPlot: false});
 document.getElementById('visual').style.display = 'inline';
 
 
@@ -551,9 +580,10 @@ function preprocessStr(userInput) {
 function userSubmit() {
 	document.getElementById('answer-box').style.display = 'none';
 	document.getElementById('visual').style.display = 'none';
+	
 	userText = $('#text-area').val();
 	//alert(userText);
-	userText = preprocessStr(userText);
+	//userText = preprocessStr(userText);
 	var returnVal = processText(userText);
 
 	if (returnVal == -1) {
