@@ -179,7 +179,7 @@ function isAlpha(aChar)
 function processText(userInput) {
 
 	if (userInput.length == 0) {
-		return;
+		return -1;
 	}
 
 	var txt = nlp(userInput, lexicon);
@@ -201,23 +201,34 @@ function processText(userInput) {
 		}
 		if (blah || txtTerms[i].bestTag == undefined || txtTerms[i].bestTag == 'Value' || operators.has(txtTerms[i].text)) {
 			console.log('here');
+			console.log(txtTerms[i][txtTerms[i].length-1]);
 			if (txtTerms[i].bestTag == 'Value') {
 				currExpression += txtTerms[i].normal;
 				//console.log(txtTerms[i]);
-			} else {
+				console.log('here112');
+			} 
+			else if (operators.has(txtTerms[i].text[txtTerms[i].text.length-1])) {
+				console.log('here111');
+				currExpression += txtTerms[i].text;
+			}
+			else {
 				currExpression += txtTerms[i].normal;
+				console.log('here114');
 			}
 		} else if (!(blah ||txtTerms[i].bestTag == undefined || txtTerms[i].bestTag == 'Value' || operators.has(txtTerms[i].text)) && currExpression.length > 0) {
-			
+			console.log(currExpression);
 			expressions.push(currExpression);
 			currExpression = "";
+			console.log('here113');
 		}
 		console.log(txtTerms[i].text + '->' + txtTerms[i].bestTag);
 	}
 
 	if (currExpression.length > 0) {
+		console.log(currExpression);
 		expressions.push(currExpression);
 	}
+	console.log(expressions);
 	currExpression = "";
 
 	var variables = [];	
@@ -232,15 +243,20 @@ function processText(userInput) {
 		
 			variables.push(currVars);
 		
-
-
 	}
 
 	console.log(variables);
-	var finalVar;
+	var finalVar = "";
 	if (variables.length > 0) {
 		finalVar = variables[0].values().next().value;
 	}
+
+
+	if (variables[0].has("x")) {
+		finalVar = "x";
+	}
+
+
 	var splitStr = ops.splitOn('#Operation');
 
 	var beforeOp = "";
@@ -252,8 +268,9 @@ function processText(userInput) {
 		numsAfter = afterOp.values().numbers();
 	}
 
-	//operations = ops.match('#Operation').out('text');
-	//console.log(txt.match('#' + operations).out());
+	// GRAB THE OPERATION TYPE
+
+
 	var ops_ = new Set();
 
 	for (var key in lexicon) {
@@ -268,76 +285,102 @@ function processText(userInput) {
 		ops_.delete('2d_area');
 	}
 
+	// Print out information about query parts before and
+	// after the operation information
+
 	if (beforeOp != "") {
 		console.log('Before Op: ' + beforeOp.out());
 		console.log(numsBefore);
 	}
+
 	console.log('Op: ' );
 	console.log(ops_);
+	
 	if (afterOp != "") {
 		console.log('After Op: ' + afterOp.out());
 		console.log(numsAfter);
 	}
-	console.log('Mathematical expressions:');
-	console.log(expressions[0]);
-	console.log(finalVar);
-	console.log(ops_.values().next().value.toLowerCase());
-	var nerdamerString;
+	
+	var finalOperation = "";
+	var finalExpression = "";
+
+	//console.log('Mathematical expressions:');
+	//console.log(expressions[0]);
+	//console.log(finalVar);
+	//console.log(ops_.values().next().value.toLowerCase());
 	if (expressions.length > 0) {
-		nerdamerString = opToExpr(ops_.values().next().value.toLowerCase(), expressions[0], finalVar);
+		finalExpression = expressions[0];
 	}
-	console.log(nerdamerString);
-
-
-	var core = nerdamer.getCore();
-	//the parser can be accessed in the core through PARSER. 
-	//Make a shortcut using underscore
-	var _ = core.PARSER;
-	//the parser requires objects of class Symbol
-	var Symbol = core.Symbol;
-	//create a symbol
-	var x1 = new Symbol('x');
-	//one more
-	var x2 = new Symbol('x');
-	//add them using the parser
-	var result = _.add(nerdamerString,x1);
-	//in this case x1 was recycled
-	console.log(result); //true
-
-
-
-	//var nerdamerized = nerdamer(nerdamerString);
-	//console.log(nerdamerized);
-	//var questionLatex = nerdamerized.toTeX();
-	//console.log('here1');
-	var answer = nerdamer(nerdamerString);
-	//console.log('here2');
-
-	var myFunction = answer.buildFunction();
-
-	var x_vals = [];
-	var y_vals = [];
-	for (var q = -10; q <= 10; q += 0.1) {
-		x_vals.push(q);
-		y_vals.push(myFunction(q));
+	if (ops_.size > 0) {
+		finalOperation = ops_.values().next().value.toLowerCase();
 	}
 
 
+	if (finalOperation == "" && finalExpression == "") {
+		return -1;
+	} else if (finalOperation != "" && finalExpression == "") {
+		// some other query
+	} else if (finalOperation == "" && finalExpression != "") {
+		// just throw is nerdamer and see what happens
+		if (finalVar == "") {
+			return -1;
+		}
 
-	var answerLatex =  nerdamer.convertToLaTeX(answer.toString());
-	var questionLatex = nerdamer(expressions[0]);
-	questionLatex = opToExpr(ops_.values().next().value.toLowerCase(), questionLatex, finalVar);
-	questionLatex = nerdamer.convertToLaTeX(questionLatex);
-	console.log(questionLatex.toString());
-	console.log(answer.toString());
-	console.log(answerLatex.toString());
-	yourQSentence = 'You asked: ' + standardTxt.sentences().out();
-	console.log(yourQSentence);
-	document.getElementById('you-asked').innerHTML = yourQSentence;
-	var math = MathJax.Hub.getAllJax("math-expr")[0];
-	MathJax.Hub.Queue(["Text",math,questionLatex.toString() + ' = ' + answerLatex.toString()]);
 
-	getVisual(x_vals,y_vals);
+
+	} else if (finalOperation != "" && finalExpression != "") {
+		// good
+
+		var nerdamerString;
+		
+		nerdamerString = opToExpr(finalOperation, finalExpression, finalVar);
+		
+		console.log(nerdamerString);
+
+		var answer = nerdamer(nerdamerString);
+		
+		var myFunction = answer.buildFunction();
+
+		var x_vals = [];
+		
+		var y_vals = [];
+		
+		for (var q = -10; q <= 10; q += 0.1) {
+			x_vals.push(q);
+			y_vals.push(myFunction(q));
+		}
+
+
+		// Convert things to latex
+		var answerLatex =  nerdamer.convertToLaTeX(answer.toString());
+		var questionLatex = nerdamer(expressions[0]);
+		questionLatex = opToExpr(ops_.values().next().value.toLowerCase(), questionLatex, finalVar);
+		questionLatex = nerdamer.convertToLaTeX(questionLatex);
+		// log info to console
+		console.log(questionLatex.toString());
+		console.log(answer.toString());
+		console.log(answerLatex.toString());
+		// User feedback
+
+
+
+		yourQSentence = 'You asked: ' + standardTxt.sentences().out();
+		
+		document.getElementById('you-asked').innerHTML = yourQSentence;
+		
+		var math = MathJax.Hub.getAllJax("math-expr")[0];
+		
+		MathJax.Hub.Queue(["Text",math,questionLatex.toString() + ' = ' + answerLatex.toString()]);
+
+		getVisual(x_vals,y_vals);
+		
+		document.getElementById('answer-box').style.display = 'block';
+
+	} else {
+		return -1;
+	}
+
+
 }
 
 function opToExpr(typeExpr,expr,finalVar) {
@@ -485,6 +528,8 @@ var layout = {
   plot_bgcolor: 'rgba(223, 223, 223, 0.25)'
 };
 Plotly.newPlot(tester, data, layout, {staticPlot: true});
+document.getElementById('visual').style.display = 'inline';
+
 
 }
 
@@ -504,11 +549,19 @@ function preprocessStr(userInput) {
 }
 
 function userSubmit() {
-
+	document.getElementById('answer-box').style.display = 'none';
+	document.getElementById('visual').style.display = 'none';
 	userText = $('#text-area').val();
 	//alert(userText);
 	userText = preprocessStr(userText);
-	processText(userText);
+	var returnVal = processText(userText);
+
+	if (returnVal == -1) {
+		var feedBack = document.getElementById('answer-box');
+		feedBack.style.display = 'block';
+		document.getElementById('you-asked').innerHTML = "Please enter a valid question.";
+	}
+
 	$('#text-area').val('');
 
 	expr = {
@@ -519,6 +572,8 @@ function userSubmit() {
 		'to': '2',
 		'at': '',
 	};
+
+
 
 	// nlp(userText);
 	// alert(evaluate(expr));

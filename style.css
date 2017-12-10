@@ -220,7 +220,7 @@ feedback-wrapper {
 	border: none;
 	resize: none;
 	border-radius: 5px;
-	display: block;
+	display: none;
 	margin-top: 1em;		
 }
 
@@ -234,11 +234,7 @@ feedback-wrapper {
 	transition: all 0.3s ease-in-out;
 	
 }
-#math-expr:hover {
-	font-size: 1.5em;
-	cursor: pointer;
-	text-shadow: 0 10px 10px rgba(0,0,0,0.50);
-}
+
 #visual {
 	margin-top: 50px;
 }
