@@ -269,13 +269,21 @@ function processText(userInput) {
 	console.log(variables);
 	var finalVar = "";
 	if (variables.length > 0) {
-		finalVar = variables[0].values().next().value;
+
+		for (var v of variables[0]){
+			if (!operators.has(v)) {
+				finalVar = v;
+				break;
+			}
+		}
+		
+		if (variables[0].has("x")) {
+			finalVar = "x";
+		}
 	}
 
 
-	if (variables[0].has("x")) {
-		finalVar = "x";
-	}
+
 
 
 	var splitStr = ops.splitOn('#Operation');
@@ -345,7 +353,9 @@ function processText(userInput) {
 		// some other query
 	} else if ((finalOperation == "" && finalExpression != "") || finalOperation == 'plot' ) {
 		// just throw is nerdamer and see what happens
-		
+		if (numsAfter == undefined && numsAfter == undefined && finalVar == "") {
+			return -1;
+		}
 		var answer = nerdamer(finalExpression).evaluate();
 		
 		var answerLatex =  nerdamer.convertToLaTeX(answer.toString());
@@ -605,6 +615,8 @@ function userSubmit() {
 	document.getElementById('visual').style.display = 'none';
 	
 	userText = $('#text-area').val();
+	$('#text-area').val('');
+	
 	//alert(userText);
 	//userText = preprocessStr(userText);
 	var returnVal = processText(userText);
@@ -615,30 +627,7 @@ function userSubmit() {
 		document.getElementById('you-asked').innerHTML = "Please enter a valid question.";
 	}
 
-	$('#text-area').val('');
+	
 
-	expr = {
-		'operation': 'area',
-		'expression': 'x^3',
-		'value': '',
-		'from' : '0',
-		'to': '2',
-		'at': '',
-	};
-
-
-
-	// nlp(userText);
-	// alert(evaluate(expr));
-	// var result = evaluate(expr);
-	// alert(result)
-	// alert(son.response);
-	//getVisual();
 }
-
-function onload() {
-	return;
-}
-
-
 

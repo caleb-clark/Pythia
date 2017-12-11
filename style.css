@@ -103,9 +103,12 @@ h6 {
 
 #app-wrapper {
 	padding: 10em;
+
 }
 
 #app {
+	width: 85%;
+	margin: 0 auto;
 	/*border-style: solid;
     border-width: 5px;*/
 }
@@ -239,4 +242,21 @@ feedback-wrapper {
 	margin-top: 50px;
 	
 	
+}
+
+#footer {
+	width: 95%;
+	margin: 0 auto;
+	text-align: center;
+	font-size: 1.25em;
+	color: rgba(223, 223, 223, 0.95);
+	padding: 1.5em;
+	border-top: 1px solid rgba(223,223,223,0.5);
+	text-shadow: 0 5px 5px rgba(0,0,0,0.15);
+}
+#logo-footer {
+	margin: 0 auto;
+	width: 2em;
+	-webkit-filter: drop-shadow(0px 5px 5px #424242);
+	filter: drop-shadow(0px 5px 5px #424242);
 }
