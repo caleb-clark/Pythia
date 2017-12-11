@@ -184,7 +184,7 @@ function isAlpha(aChar)
   return false;
 }
 
-function processText(userInput) {
+function processText(userInput, original) {
 
 	if (userInput.length == 0) {
 		return -1;
@@ -345,7 +345,8 @@ function processText(userInput) {
 	}
 	
 	console.log('Final operation: ' + finalOperation);
-
+	console.log('Final Expression: ' + finalExpression);
+	console.log('Final variable: ' + finalVar);
 
 	if (finalOperation == "" && finalExpression == "") {
 		return -1;
@@ -353,9 +354,13 @@ function processText(userInput) {
 		// some other query
 	} else if ((finalOperation == "" && finalExpression != "") || finalOperation == 'plot' ) {
 		// just throw is nerdamer and see what happens
-		if (numsAfter == undefined && numsAfter == undefined && finalVar == "") {
+
+		/*if (numsAfter == undefined && numsAfter == undefined && finalVar == "") {
 			return -1;
-		}
+		}*/
+
+		console.log('HERE111');
+
 		var answer = nerdamer(finalExpression).evaluate();
 		
 		var answerLatex =  nerdamer.convertToLaTeX(answer.toString());
@@ -372,7 +377,7 @@ function processText(userInput) {
 			x_vals.push(q);
 			y_vals.push(myFunction(q));
 		}
-		yourQSentence = 'You asked: ' + standardTxt.sentences().out();
+		yourQSentence = 'You asked: ' + original;
 		
 		document.getElementById('you-asked').innerHTML = yourQSentence;
 		
@@ -605,9 +610,9 @@ function externalReadings() {
 
 function preprocessStr(userInput) {
 	
-	userInput = userInput.toLowerCase();
-
-	return userInput;
+	var txt = nlp(userInput).values().toNumber().all().out();
+	console.log('Preprocessing: ' + txt);
+	return txt;
 }
 
 function userSubmit() {
@@ -618,8 +623,8 @@ function userSubmit() {
 	$('#text-area').val('');
 	
 	//alert(userText);
-	//userText = preprocessStr(userText);
-	var returnVal = processText(userText);
+	var converted = preprocessStr(userText);
+	var returnVal = processText(converted, userText);
 
 	if (returnVal == -1) {
 		var feedBack = document.getElementById('answer-box');
