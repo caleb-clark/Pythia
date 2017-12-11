@@ -81,6 +81,10 @@ var lexicon = {
 
 	'integrate': 'Integrate',
 	'integral' : 'Integrate',
+	
+	'plot': 'Plot',
+	'graph': 'Plot',
+	'visual': 'Plot',
 };
 
 var operations = {
@@ -160,7 +164,11 @@ var operations = {
 
 'integrate': 'Operation',
 
-'integral': 'Operation'
+'integral': 'Operation',
+
+'plot': 'Operation',
+'graph': 'Operation',
+'visual': 'Operation',
 };
 
 function isAlpha(aChar)
@@ -201,7 +209,8 @@ function processText(userInput) {
 		}
 		if (blah || txtTerms[i].bestTag == undefined || txtTerms[i].bestTag == 'Value' || operators.has(txtTerms[i].text)) {
 			console.log('here');
-			console.log(txtTerms[i][txtTerms[i].length-1]);
+			console.log(txtTerms[i].text[txtTerms[i].text.length-1]);
+			var lastChar = txtTerms[i].text[txtTerms[i].text.length-1];
 			if (txtTerms[i].bestTag == 'Value') {
 				currExpression += txtTerms[i].normal;
 				//console.log(txtTerms[i]);
@@ -211,8 +220,20 @@ function processText(userInput) {
 				console.log('here111');
 				currExpression += txtTerms[i].text;
 			}
+			else if (lastChar == '?' || lastChar == '.' || lastChar == ',' || lastChar == '!') {
+				console.log('herehere');
+				var cnt = txtTerms[i].text.length - 1;
+				while (lastChar == '?' || lastChar == '.' || lastChar == ',' || lastChar == '!') {
+					cnt--;
+					lastChar = txtTerms[i].text[cnt];
+				}
+				cnt++;
+				console.log(cnt);
+				currExpression += txtTerms[i].text.substr(0,cnt);
+			}
 			else {
 				currExpression += txtTerms[i].normal;
+				console.log(txtTerms[i].normal);
 				console.log('here114');
 			}
 		} else if (!(blah ||txtTerms[i].bestTag == undefined || txtTerms[i].bestTag == 'Value' || operators.has(txtTerms[i].text)) && currExpression.length > 0) {
@@ -314,13 +335,15 @@ function processText(userInput) {
 	if (ops_.size > 0) {
 		finalOperation = ops_.values().next().value.toLowerCase();
 	}
+	
+	console.log('Final operation: ' + finalOperation);
 
 
 	if (finalOperation == "" && finalExpression == "") {
 		return -1;
 	} else if (finalOperation != "" && finalExpression == "") {
 		// some other query
-	} else if (finalOperation == "" && finalExpression != "") {
+	} else if ((finalOperation == "" && finalExpression != "") || finalOperation == 'plot' ) {
 		// just throw is nerdamer and see what happens
 		
 		var answer = nerdamer(finalExpression).evaluate();
